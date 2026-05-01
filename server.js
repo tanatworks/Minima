@@ -6,7 +6,7 @@ const path = require('path');
 const checkPassword = require('./checkPassword');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const DB_FILE = process.env.DB_FILE || './database.sqlite';
 
 app.use(bodyParser.json());
@@ -16,19 +16,24 @@ let db;
 
 // Initialize Database
 (async () => {
-    db = await open({
-        filename: DB_FILE,
-        driver: sqlite3.Database
-    });
+    try {
+        db = await open({
+            filename: DB_FILE,
+            driver: sqlite3.Database
+        });
 
-    await db.exec(`
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT UNIQUE,
-            password TEXT
-        )
-    `);
-    console.log('SQLite Database initialized.');
+        await db.exec(`
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT UNIQUE,
+                password TEXT
+            )
+        `);
+        console.log('SQLite Database initialized.');
+    } catch (err) {
+        console.error('Database initialization failed:', err);
+        process.exit(1);
+    }
 })();
 
 // Registration Endpoint
@@ -71,8 +76,8 @@ app.post('/login', async (req, res) => {
 });
 
 if (require.main === module) {
-    app.listen(PORT, () => {
-        console.log(`Server running at http://localhost:${PORT}`);
+    app.listen(PORT, '0.0.0.0', () => {
+        console.log(`Server running at http://0.0.0.0:${PORT}`);
     });
 }
 

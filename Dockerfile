@@ -19,20 +19,20 @@ RUN npm ci --only=production
 # --- Stage 2: Final Image ---
 FROM base AS runner
 
-# Create a non-root user for security (Least Privilege Principle)
-# Running as root inside a container is a security risk
-USER node
+# Set working directory again to be sure
+WORKDIR /app
 
 # Copy the rest of the application code
-# Ensure the node user owns the files
-COPY --chown=node:node . .
+COPY . .
 
-# SQLite needs to write to the database file. 
-# In a containerized env, it's best to use a volume or ensure 
-# the app has write permissions in its directory.
-# Since we are node user, we can write to /app because base image set it up.
+# Ensure the node user owns the entire app directory
+# This is crucial for SQLite to create/write the database file
+RUN chown -R node:node /app
 
-# Expose the application port
+# Switch to non-root user
+USER node
+
+# Expose the application port (Render will override this via ENV PORT)
 EXPOSE 3000
 
 # Start the application

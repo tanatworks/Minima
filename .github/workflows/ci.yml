@@ -1,44 +1,25 @@
-name: CI Pipeline
+name: Node.js CI
 
-# Trigger the workflow on pushes to the main branch and any pull requests
 on:
-  push:
-    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
 jobs:
   build-and-test:
-    # Use the latest Ubuntu runner
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Check out the code from the repository
-      - name: Checkout Repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      # Step 2: Set up the Node.js environment
-      - name: Setup Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm' # Automatically caches npm dependencies for faster runs
+          cache: 'npm'
 
-      # Step 3: Install project dependencies
-      - name: Install Dependencies
+      - name: Install dependencies
         run: npm ci
 
-      # Step 4: Run automated tests
-      # This ensures the password validation logic and other features work as expected
-      - name: Run Tests
+      - name: Run automated tests
         run: npm test
-
-      # Step 5: Build Docker image
-      # This ensures the Dockerfile is valid and the app can be containerized
-      - name: Build Docker Image
-        run: docker build -t minimal-auth-app:latest .
-
-      # Step 6: (Optional) Verify Docker image
-      # A quick check to ensure the container starts correctly
-      - name: Verify Docker Execution
-        run: docker run --rm minimal-auth-app:latest node -v

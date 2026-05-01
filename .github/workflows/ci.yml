@@ -25,14 +25,3 @@ jobs:
 
       - name: Run automated tests
         run: npm test
-
-  deploy:
-    name: Deploy to Render
-    needs: build-and-test
-    # Only deploy if tests pass and we are pushing to the main branch
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Trigger Render Deploy Hook
-        run: |
-          curl -f "${{ secrets.RENDER_DEPLOY_HOOK }}"

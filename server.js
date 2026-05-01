@@ -7,7 +7,7 @@ const checkPassword = require('./checkPassword');
 
 const app = express();
 const PORT = 3000;
-const DB_FILE = './database.sqlite';
+const DB_FILE = process.env.DB_FILE || './database.sqlite';
 
 app.use(bodyParser.json());
 app.use(express.static('public'));
@@ -70,6 +70,11 @@ app.post('/login', async (req, res) => {
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
-});
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`Server running at http://localhost:${PORT}`);
+    });
+}
+
+module.exports = app;
+

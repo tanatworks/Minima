@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Login System</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --success: #10b981;
+            --error: #ef4444;
+            --bg: #f9fafb;
+        }
+        body { 
+            font-family: 'Inter', system-ui, -apple-system, sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0;
+            background: var(--bg);
+        }
+        .card { 
+            background: white; 
+            padding: 2.5rem; 
+            border-radius: 12px; 
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); 
+            width: 100%;
+            max-width: 360px; 
+        }
+        h2 { margin: 0 0 1.5rem; color: #111827; text-align: center; }
+        .input-group { margin-bottom: 1rem; }
+        label { display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.25rem; }
+        input { 
+            width: 100%; 
+            padding: 0.75rem; 
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        input:focus { outline: none; border-color: var(--primary); ring: 2px solid #c7d2fe; }
+        .rules { font-size: 0.75rem; color: #6b7280; margin: -0.5rem 0 1rem; line-height: 1.4; }
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem; }
+        button { 
+            padding: 0.75rem; 
+            cursor: pointer; 
+            border: none; 
+            border-radius: 6px; 
+            font-weight: 600;
+            transition: opacity 0.2s;
+        }
+        button:active { transform: translateY(1px); }
+        .login-btn { background: var(--primary); color: white; }
+        .register-btn { background: white; color: var(--primary); border: 1px solid var(--primary); }
+        #message { 
+            margin-top: 1.25rem; 
+            padding: 0.75rem;
+            border-radius: 6px;
+            text-align: center; 
+            font-size: 0.875rem; 
+            display: none;
+        }
+        .error { background: #fee2e2; color: var(--error); display: block !important; }
+        .success { background: #dcfce7; color: var(--success); display: block !important; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Auth System</h2>
+        
+        <div class="input-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" placeholder="e.g. johndoe">
+        </div>
+
+        <div class="input-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="••••••••">
+        </div>
+        <div class="rules">
+            • At least 8 characters<br>
+            • At least 1 number
+        </div>
+
+        <div class="btn-group">
+            <button class="register-btn" onclick="handleAuth('/register')">Register</button>
+            <button class="login-btn" onclick="handleAuth('/login')">Login</button>
+        </div>
+        
+        <div id="message"></div>
+    </div>
+
+    <script>
+        function validatePassword(pwd) {
+            return pwd.length >= 8 && /\d/.test(pwd);
+        }
+
+        async function handleAuth(endpoint) {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('message');
+            
+            if (!username || !password) {
+                messageDiv.innerText = 'Fields cannot be empty.';
+                messageDiv.className = 'error';
+                return;
+            }
+
+            // Client-side rule check
+            if (!validatePassword(password)) {
+                messageDiv.innerText = 'Password does not meet rules.';
+                messageDiv.className = 'error';
+                return;
+            }
+
+            messageDiv.style.display = 'none';
+
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await response.json();
+                
+                messageDiv.innerText = data.message;
+                messageDiv.className = response.ok ? 'success' : 'error';
+            } catch (err) {
+                messageDiv.innerText = 'Connection error.';
+                messageDiv.className = 'error';
+            }
+        }
+    </script>
+</body>
+</html>
+

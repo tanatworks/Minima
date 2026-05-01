@@ -3,136 +3,206 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Login System</title>
+    <title>SecureAuth | Modern Authentication</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #4f46e5;
-            --success: #10b981;
-            --error: #ef4444;
-            --bg: #f9fafb;
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top left, #1e293b, #0f172a);
         }
-        body { 
-            font-family: 'Inter', system-ui, -apple-system, sans-serif; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            margin: 0;
-            background: var(--bg);
+        .glass-morphism {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        .card { 
-            background: white; 
-            padding: 2.5rem; 
-            border-radius: 12px; 
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); 
-            width: 100%;
-            max-width: 360px; 
+        .form-transition {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        h2 { margin: 0 0 1.5rem; color: #111827; text-align: center; }
-        .input-group { margin-bottom: 1rem; }
-        label { display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.25rem; }
-        input { 
-            width: 100%; 
-            padding: 0.75rem; 
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            box-sizing: border-box;
-            font-size: 1rem;
-            transition: border-color 0.2s;
+        .log-area {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
         }
-        input:focus { outline: none; border-color: var(--primary); ring: 2px solid #c7d2fe; }
-        .rules { font-size: 0.75rem; color: #6b7280; margin: -0.5rem 0 1rem; line-height: 1.4; }
-        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem; }
-        button { 
-            padding: 0.75rem; 
-            cursor: pointer; 
-            border: none; 
-            border-radius: 6px; 
-            font-weight: 600;
-            transition: opacity 0.2s;
+        .log-area::-webkit-scrollbar {
+            width: 4px;
         }
-        button:active { transform: translateY(1px); }
-        .login-btn { background: var(--primary); color: white; }
-        .register-btn { background: white; color: var(--primary); border: 1px solid var(--primary); }
-        #message { 
-            margin-top: 1.25rem; 
-            padding: 0.75rem;
-            border-radius: 6px;
-            text-align: center; 
-            font-size: 0.875rem; 
-            display: none;
+        .log-area::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
         }
-        .error { background: #fee2e2; color: var(--error); display: block !important; }
-        .success { background: #dcfce7; color: var(--success); display: block !important; }
     </style>
 </head>
-<body>
-    <div class="card">
-        <h2>Auth System</h2>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <div class="max-w-4xl w-full grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
         
-        <div class="input-group">
-            <label for="username">Username</label>
-            <input type="text" id="username" placeholder="e.g. johndoe">
+        <!-- Left Side: Authentication Card -->
+        <div class="glass-morphism rounded-3xl p-8 shadow-2xl">
+            <div class="flex flex-col items-center mb-8">
+                <div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center mb-4 shadow-lg shadow-blue-500/20">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                    </svg>
+                </div>
+                <h1 id="form-title" class="text-3xl font-bold text-white mb-2">Welcome Back</h1>
+                <p id="form-subtitle" class="text-slate-400 text-center">Enter your details to access your account</p>
+            </div>
+
+            <!-- Toggle Tabs -->
+            <div class="flex p-1 bg-slate-800/50 rounded-xl mb-8">
+                <button onclick="toggleForm('login')" id="login-tab" class="flex-1 py-2 text-sm font-medium rounded-lg transition-all bg-blue-600 text-white shadow-lg">Login</button>
+                <button onclick="toggleForm('register')" id="register-tab" class="flex-1 py-2 text-sm font-medium rounded-lg transition-all text-slate-400 hover:text-white">Register</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form" class="form-transition space-y-5">
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">Username</label>
+                    <input type="text" name="username" required class="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all" placeholder="Enter username">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">Password</label>
+                    <input type="password" name="password" required class="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all" placeholder="••••••••">
+                </div>
+                <button type="submit" class="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl transition-all transform active:scale-[0.98] shadow-lg shadow-blue-500/25">
+                    Sign In
+                </button>
+            </form>
+
+            <!-- Register Form (Hidden by default) -->
+            <form id="register-form" class="form-transition space-y-5 hidden">
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">Username</label>
+                    <input type="text" name="username" required class="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all" placeholder="Choose a username">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">Password</label>
+                    <input type="password" name="password" required class="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all" placeholder="Min. 8 characters + 1 number">
+                </div>
+                <button type="submit" class="w-full py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl transition-all transform active:scale-[0.98] shadow-lg shadow-emerald-500/25">
+                    Create Account
+                </button>
+            </form>
         </div>
 
-        <div class="input-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" placeholder="••••••••">
+        <!-- Right Side: Status & Logs Area -->
+        <div class="lg:sticky lg:top-4">
+            <div class="glass-morphism rounded-3xl overflow-hidden border-slate-800 shadow-xl">
+                <div class="px-6 py-4 bg-slate-800/50 border-b border-slate-700 flex items-center justify-between">
+                    <h3 class="text-sm font-bold text-slate-300 uppercase tracking-widest flex items-center gap-2">
+                        <span class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
+                        System Logs
+                    </h3>
+                    <button onclick="clearLogs()" class="text-xs text-slate-500 hover:text-slate-300 transition-colors">Clear</button>
+                </div>
+                <div id="log-area" class="log-area h-80 p-6 overflow-y-auto space-y-4 font-mono text-sm">
+                    <div class="text-slate-500 italic">Waiting for input...</div>
+                </div>
+            </div>
+            
+            <div class="mt-6 p-6 glass-morphism rounded-3xl">
+                <h4 class="text-white font-semibold mb-2">How it works</h4>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    This interface communicates with a real Node.js backend using SQLite. Your password validation rules are enforced server-side.
+                </p>
+            </div>
         </div>
-        <div class="rules">
-            • At least 8 characters<br>
-            • At least 1 number
-        </div>
-
-        <div class="btn-group">
-            <button class="register-btn" onclick="handleAuth('/register')">Register</button>
-            <button class="login-btn" onclick="handleAuth('/login')">Login</button>
-        </div>
-        
-        <div id="message"></div>
     </div>
 
     <script>
-        function validatePassword(pwd) {
-            return pwd.length >= 8 && /\d/.test(pwd);
+        const logArea = document.getElementById('log-area');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const loginTab = document.getElementById('login-tab');
+        const registerTab = document.getElementById('register-tab');
+        const formTitle = document.getElementById('form-title');
+        const formSubtitle = document.getElementById('form-subtitle');
+
+        function addLog(message, type = 'info') {
+            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const colors = {
+                info: 'text-blue-400',
+                success: 'text-emerald-400',
+                error: 'text-rose-400',
+                warn: 'text-amber-400'
+            };
+            
+            const logEntry = document.createElement('div');
+            logEntry.className = 'border-l-2 border-slate-700 pl-4 py-1 animate-in fade-in slide-in-from-left duration-300';
+            logEntry.innerHTML = `
+                <div class="flex items-start gap-3">
+                    <span class="text-slate-600 shrink-0 mt-0.5 text-[10px]">[${time}]</span>
+                    <span class="${colors[type]} leading-tight">${message}</span>
+                </div>
+            `;
+            
+            if (logArea.querySelector('.italic')) logArea.innerHTML = '';
+            logArea.appendChild(logEntry);
+            logArea.scrollTop = logArea.scrollHeight;
         }
 
-        async function handleAuth(endpoint) {
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value;
-            const messageDiv = document.getElementById('message');
-            
-            if (!username || !password) {
-                messageDiv.innerText = 'Fields cannot be empty.';
-                messageDiv.className = 'error';
-                return;
-            }
+        function clearLogs() {
+            logArea.innerHTML = '<div class="text-slate-500 italic">Waiting for input...</div>';
+        }
 
-            // Client-side rule check
-            if (!validatePassword(password)) {
-                messageDiv.innerText = 'Password does not meet rules.';
-                messageDiv.className = 'error';
-                return;
+        function toggleForm(type) {
+            if (type === 'login') {
+                loginForm.classList.remove('hidden');
+                registerForm.classList.add('hidden');
+                loginTab.className = 'flex-1 py-2 text-sm font-medium rounded-lg transition-all bg-blue-600 text-white shadow-lg';
+                registerTab.className = 'flex-1 py-2 text-sm font-medium rounded-lg transition-all text-slate-400 hover:text-white';
+                formTitle.innerText = 'Welcome Back';
+                formSubtitle.innerText = 'Enter your details to access your account';
+                addLog('Switched to Login view');
+            } else {
+                loginForm.classList.add('hidden');
+                registerForm.classList.remove('hidden');
+                registerTab.className = 'flex-1 py-2 text-sm font-medium rounded-lg transition-all bg-emerald-600 text-white shadow-lg';
+                loginTab.className = 'flex-1 py-2 text-sm font-medium rounded-lg transition-all text-slate-400 hover:text-white';
+                formTitle.innerText = 'Create Account';
+                formSubtitle.innerText = 'Join us and start your journey today';
+                addLog('Switched to Registration view');
             }
+        }
 
-            messageDiv.style.display = 'none';
+        async function handleFormSubmit(e, endpoint, type) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+
+            addLog(`${type === 'login' ? 'Attempting Login' : 'Registering'} user: <strong>${data.username}</strong>`, 'info');
+            addLog('Validating payload and checking server status...', 'info');
 
             try {
                 const response = await fetch(endpoint, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
+                    body: JSON.stringify(data)
                 });
-                const data = await response.json();
-                
-                messageDiv.innerText = data.message;
-                messageDiv.className = response.ok ? 'success' : 'error';
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    addLog(result.message, 'success');
+                    if(type === 'login') {
+                        addLog('Redirecting to dashboard...', 'success');
+                    } else {
+                        addLog('Please switch to login to enter your account', 'warn');
+                    }
+                    e.target.reset();
+                } else {
+                    addLog(`Error: ${result.message}`, 'error');
+                }
             } catch (err) {
-                messageDiv.innerText = 'Connection error.';
-                messageDiv.className = 'error';
+                addLog('Network Error: Server might be offline', 'error');
             }
         }
+
+        loginForm.addEventListener('submit', (e) => handleFormSubmit(e, '/login', 'login'));
+        registerForm.addEventListener('submit', (e) => handleFormSubmit(e, '/register', 'register'));
+
+        // Initial welcome log
+        window.onload = () => addLog('System initialized. Ready for authentication.', 'info');
     </script>
 </body>
 </html>
-
